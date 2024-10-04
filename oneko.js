@@ -1,5 +1,3 @@
-// oneko.js: https://github.com/adryd325/oneko.js
-
 (function oneko() {
     const nekoEl = document.createElement("div");
   
@@ -36,7 +34,6 @@
         .replace("?", "")
         .split("&")
         .map((keyvaluepair) => keyvaluepair.split("="));
-      // This is so much repeated code, I don't like it
       tmp = searchParams.find((a) => a[0] == "catx");
       if (tmp && tmp[1]) nekoPosX = parseInt(tmp[1]);
       tmp = searchParams.find((a) => a[0] == "caty");
@@ -50,42 +47,42 @@
       console.error(e);
     }
     
-  function onClick(event) {
-    let target;
-    if (event.target.tagName === "A" && event.target.getAttribute("href")) {
-      target = event.target;
-    } else if (
-      event.target.tagName == "IMG" &&
-      event.target.parentElement.tagName === "A" &&
-      event.target.parentElement.getAttribute("href")
-    ) {
-      target = event.target.parentElement;
-    } else {
-      return;
+    function onClick(event) {
+      let target;
+      if (event.target.tagName === "A" && event.target.getAttribute("href")) {
+        target = event.target;
+      } else if (
+        event.target.tagName == "IMG" &&
+        event.target.parentElement.tagName === "A" &&
+        event.target.parentElement.getAttribute("href")
+      ) {
+        target = event.target.parentElement;
+      } else {
+        return;
+      }
+      let newLocation;
+      try {
+        newLocation = new URL(target.href);
+      } catch (e) {
+        return;
+      }
+      if (!nekoSites.includes(newLocation.host) || newLocation.pathname != "/")
+        return;
+      newLocation.searchParams.append("catx", Math.floor(nekoPosX));
+      newLocation.searchParams.append("caty", Math.floor(nekoPosY));
+      newLocation.searchParams.append("catdx", Math.floor(mousePosX));
+      newLocation.searchParams.append("catdy", Math.floor(mousePosY));
+      event.preventDefault();
+      window.location.href = newLocation.toString();
     }
-    let newLocation;
-    try {
-      newLocation = new URL(target.href);
-    } catch (e) {;
-      return;
-    }
-    if (!nekoSites.includes(newLocation.host) || newLocation.pathname != "/")
-      return;
-    newLocation.searchParams.append("catx", Math.floor(nekoPosX));
-    newLocation.searchParams.append("caty", Math.floor(nekoPosY));
-    newLocation.searchParams.append("catdx", Math.floor(mousePosX));
-    newLocation.searchParams.append("catdy", Math.floor(mousePosY));
-    event.preventDefault();
-    window.location.href = newLocation.toString();
-  }
-  document.addEventListener("click", onClick);
+    document.addEventListener("click", onClick);
   
     let frameCount = 0;
     let idleTime = 0;
     let idleAnimation = null;
     let idleAnimationFrame = 0;
   
-    const nekoSpeed = 10;
+    const nekoSpeed = 20; // Increased speed for more responsiveness
     const spriteSets = {
       idle: [[-3, -3]],
       alert: [[-7, -3]],
@@ -152,8 +149,8 @@
     function init() {
       nekoEl.id = "oneko";
       nekoEl.ariaHidden = true;
-      nekoEl.style.width = "64px";
-      nekoEl.style.height = "64px";
+      nekoEl.style.width = "32px";
+      nekoEl.style.height = "32px";
       nekoEl.style.position = "fixed";
       nekoEl.style.pointerEvents = "none";
       nekoEl.style.backgroundImage = "url('https://raw.githubusercontent.com/adryd325/oneko.js/main/oneko.gif')";
@@ -182,9 +179,9 @@
       if (!lastFrameTimestamp) {
         lastFrameTimestamp = timestamp;
       }
-      if (timestamp - lastFrameTimestamp > 100) {
-        lastFrameTimestamp = timestamp
-        frame()
+      if (timestamp - lastFrameTimestamp > 16) { // Reduced the time interval for smoother movement
+        lastFrameTimestamp = timestamp;
+        frame();
       }
       window.requestAnimationFrame(onAnimatonFrame);
     }
@@ -295,4 +292,4 @@
     }
   
     init();
-  })();
+})();
